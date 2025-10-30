@@ -1,0 +1,106 @@
+/* General layout */
+.app-container {
+  margin: 40px auto;
+  max-width: 900px;
+  text-align: center;
+  font-family: "Poppins", sans-serif;
+  background: #f7f9fc;
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0px 0px 20px rgba(0,0,0,0.1);
+}
+
+h1 {
+  color: #007bff;
+  margin-bottom: 20px;
+}
+
+/* Search box */
+.search-box {
+  padding: 10px;
+  width: 80%;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+/* Form container */
+.form-container {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 25px;
+}
+
+.form-container input,
+.form-container select {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  min-width: 180px;
+}
+
+/* Buttons */
+button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.add-btn {
+  background: #007bff;
+  color: white;
+}
+.add-btn:hover { background: #0056b3; }
+
+.edit-btn {
+  background: #28a745;
+  color: white;
+  margin-right: 5px;
+}
+.edit-btn:hover { background: #1e7e34; }
+
+.delete-btn {
+  background: #dc3545;
+  color: white;
+  margin-right: 5px;
+}
+.delete-btn:hover { background: #b21f2d; }
+
+.toggle-btn {
+  background: #ffc107;
+  color: black;
+}
+.toggle-btn:hover { background: #e0a800; }
+
+/* Table styling */
+.book-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.book-table th, .book-table td {
+  padding: 12px;
+  border: 1px solid #ddd;
+}
+
+.book-table th {
+  background-color: #f0f0f0;
+  font-weight: bold;
+}
+
+.available {
+  color: #28a745;
+  font-weight: 600;
+}
+
+.issued {
+  color: #dc3545;
+  font-weight: 600;
+}
