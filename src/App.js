@@ -1,155 +1,114 @@
-import React, { useState, useEffect } from "react";
-import "./App.css"; // importing CSS styling
+import React, { useState, useEffect } from 'react';
+import './App.css';
 
 function App() {
   const [books, setBooks] = useState([]);
-  const [form, setForm] = useState({ title: "", author: "", availability: "Available" });
-  const [editId, setEditId] = useState(null);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [title, setTitle] = useState('');
+  const [author, setAuthor] = useState('');
+  const [status, setStatus] = useState('Available');
+  const [search, setSearch] = useState('');
 
-  // Load from localStorage
+  // Load data from localStorage
   useEffect(() => {
-    const savedBooks = JSON.parse(localStorage.getItem("books") || "[]");
-    setBooks(savedBooks);
+    const storedBooks = JSON.parse(localStorage.getItem('books'));
+    if (storedBooks) setBooks(storedBooks);
   }, []);
 
-  // Save to localStorage
+  // Save data to localStorage
   useEffect(() => {
-    localStorage.setItem("books", JSON.stringify(books));
+    localStorage.setItem('books', JSON.stringify(books));
   }, [books]);
 
-  // Add / Update book
-  const handleSubmit = () => {
-    if (!form.title || !form.author) {
-      alert("Please enter book title and author!");
-      return;
-    }
-
-    if (editId) {
-      const updated = books.map((b) =>
-        b.id === editId ? { ...b, ...form } : b
-      );
-      setBooks(updated);
-      setEditId(null);
-    } else {
-      const newBook = {
-        id: Date.now(),
-        ...form,
-        dateIssued: form.availability === "Issued" ? new Date().toLocaleDateString() : "",
-      };
-      setBooks([...books, newBook]);
-    }
-
-    setForm({ title: "", author: "", availability: "Available" });
+  // Add a new book
+  const addBook = (e) => {
+    e.preventDefault();
+    if (title.trim() === '' || author.trim() === '') return;
+    const newBook = {
+      id: Date.now(),
+      title,
+      author,
+      status
+    };
+    setBooks([...books, newBook]);
+    setTitle('');
+    setAuthor('');
+    setStatus('Available');
   };
 
-  // Edit book
-  const handleEdit = (book) => {
-    setForm({ title: book.title, author: book.author, availability: book.availability });
-    setEditId(book.id);
+  // Delete a book
+  const deleteBook = (id) => {
+    setBooks(books.filter((book) => book.id !== id));
   };
 
-  // Delete book
-  const handleDelete = (id) => {
-    if (window.confirm("Are you sure you want to delete this book?")) {
-      setBooks(books.filter((b) => b.id !== id));
-    }
-  };
-
-  // Toggle availability
-  const toggleAvailability = (id) => {
-    const updated = books.map((b) => {
-      if (b.id === id) {
-        const newStatus = b.availability === "Available" ? "Issued" : "Available";
-        return {
-          ...b,
-          availability: newStatus,
-          dateIssued: newStatus === "Issued" ? new Date().toLocaleDateString() : "",
-        };
-      }
-      return b;
-    });
-    setBooks(updated);
+  // Toggle status
+  const toggleStatus = (id) => {
+    setBooks(
+      books.map((book) =>
+        book.id === id
+          ? { ...book, status: book.status === 'Available' ? 'Issued' : 'Available' }
+          : book
+      )
+    );
   };
 
   // Search filter
-  const filteredBooks = books.filter(
-    (b) =>
-      b.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      b.author.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredBooks = books.filter((book) =>
+    book.title.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
-    <div className="app-container">
-      <h1>📚 Library Book Management System</h1>
+    <div className="App">
+      <h1>📚 Library Management System — Webhook Test v2 ✅</h1>
+      <p>Automated CI/CD with Jenkins + GitHub Integration</p>
 
-      <input
-        type="text"
-        placeholder="🔍 Search by title or author..."
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        className="search-box"
-      />
-
-      <div className="form-container">
+      <form onSubmit={addBook}>
         <input
+          type="text"
           placeholder="Book Title"
-          value={form.title}
-          onChange={(e) => setForm({ ...form, title: e.target.value })}
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          required
         />
         <input
+          type="text"
           placeholder="Author"
-          value={form.author}
-          onChange={(e) => setForm({ ...form, author: e.target.value })}
+          value={author}
+          onChange={(e) => setAuthor(e.target.value)}
+          required
         />
-        <select
-          value={form.availability}
-          onChange={(e) => setForm({ ...form, availability: e.target.value })}
-        >
+        <select value={status} onChange={(e) => setStatus(e.target.value)}>
           <option value="Available">Available</option>
           <option value="Issued">Issued</option>
         </select>
-        <button onClick={handleSubmit} className="add-btn">
-          {editId ? "Update Book" : "Add Book"}
-        </button>
-      </div>
+        <button type="submit">Add Book</button>
+      </form>
 
-      <table className="book-table">
-        <thead>
-          <tr>
-            <th>📖 Title</th>
-            <th>✍️ Author</th>
-            <th>📦 Status</th>
-            <th>📅 Date Issued</th>
-            <th>⚙️ Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredBooks.length === 0 ? (
-            <tr>
-              <td colSpan="5">No books found</td>
-            </tr>
-          ) : (
-            filteredBooks.map((book) => (
-              <tr key={book.id}>
-                <td>{book.title}</td>
-                <td>{book.author}</td>
-                <td>
-                  <span className={book.availability === "Available" ? "available" : "issued"}>
-                    {book.availability}
-                  </span>
-                </td>
-                <td>{book.dateIssued || "-"}</td>
-                <td>
-                  <button className="edit-btn" onClick={() => handleEdit(book)}>Edit</button>
-                  <button className="delete-btn" onClick={() => handleDelete(book.id)}>Delete</button>
-                  <button className="toggle-btn" onClick={() => toggleAvailability(book.id)}>Toggle</button>
-                </td>
-              </tr>
-            ))
-          )}
-        </tbody>
-      </table>
+      <input
+        type="text"
+        placeholder="🔍 Search by title..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        style={{ marginTop: '10px', padding: '5px', width: '60%' }}
+      />
+
+      <ul style={{ listStyle: 'none', padding: 0 }}>
+        {filteredBooks.map((book) => (
+          <li key={book.id} style={{ margin: '10px 0' }}>
+            <strong>{book.title}</strong> by {book.author} —{' '}
+            <em>{book.status}</em>
+            <button onClick={() => toggleStatus(book.id)} style={{ marginLeft: '10px' }}>
+              Toggle Status
+            </button>
+            <button onClick={() => deleteBook(book.id)} style={{ marginLeft: '10px' }}>
+              Delete
+            </button>
+          </li>
+        ))}
+      </ul>
+
+      <footer style={{ marginTop: '20px', fontSize: '14px', color: 'gray' }}>
+        Build triggered via GitHub Webhook 🚀
+      </footer>
     </div>
   );
 }
